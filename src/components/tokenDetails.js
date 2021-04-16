@@ -23,9 +23,9 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
   async function getTokenData() {
     console.log(typeof tokenContract, tokenContract);
     if (tokenContract != null) {
-      let ethTotal = ethers.utils.formatEther(
-        (await tokenContract.ethDeposited()).toString()
-      );
+      // let ethTotal = ethers.utils.formatEther(
+      //   (await tokenContract.ethDeposited()).toString()
+      // );
       let numBFITokens = ethers.utils.formatEther(
         (await tokenContract.totalSupply()).toString()
       );
@@ -41,7 +41,7 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
       // tWeights = tWeights.forEach((x) => x.toString());
       console.log("tAddresses", tAddresses);
       console.log("tWeights", tWeights);
-      console.log("ethTotal", ethTotal);
+      // console.log("ethTotal", ethTotal);
       console.log("numBFITokens", numBFITokens);
       console.log("contractBalance", contractBalance);
       let tNames = [];
@@ -64,7 +64,7 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
         ]),
       ]);
       setTokenAttrs({
-        ethTotal: ethTotal,
+        // ethTotal: ethTotal,
         numBFITokens: numBFITokens,
         contractBalance,
       });
@@ -118,7 +118,6 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
         <button onClick={getTokenData}>Refresh</button>
         <div>
           <ul>
-            <li>Total ETH Deposited: {tokenAttrs.ethTotal}</li>
             <li>Number of outstanding BFI tokens: {tokenAttrs.numBFITokens}</li>
             <li>Contract ETH balance: {tokenAttrs.contractBalance}</li>
             {/* <p>Portfolio value (in ETH){tokenAttrs.portfolioValue}</p> */}
