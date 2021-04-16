@@ -1,20 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+// import { ViewportProvider } from "./components/viewport";
 import { ethers } from "ethers";
 import tokenabi from "./token_abi.json";
 import votingabi from "./voting_abi.json";
 import { TOKEN_ADDRESS, VOTE_ADDRESS } from "./globals";
 
 const { ethereum } = window;
-const currentUrl = new URL(window.location.href);
-const forwarderOrigin =
-  currentUrl.hostname === "localhost" ? "http://localhost:3000" : undefined;
 const isMetaMaskInstalled = Boolean(ethereum && ethereum.isMetaMask);
 
 if (isMetaMaskInstalled) {
+  ReactDOM.render(
+    <React.StrictMode>
+      <App
+        account={null}
+        tokenContract={null}
+        votingContract={null}
+        provider={null}
+        signer={null}
+      />
+    </React.StrictMode>,
+    document.getElementById("root")
+  );
   ethereum
     .request({
       method: "eth_requestAccounts",
@@ -46,6 +56,7 @@ if (isMetaMaskInstalled) {
         </React.StrictMode>,
         document.getElementById("root")
       );
+      // window.addEventListener("resize", () => setWidth(window.innerWidth));
     })
     .catch((error) => {
       console.error(error);

@@ -14,27 +14,29 @@ export function Proposals({ votingContract, accountId, provider }) {
   const [proposalData, setProposalData] = useState([]);
   const [voteIdx, setVoteIdx] = useState([]);
   async function getData() {
-    let rows = [];
-    const numProposalsRaw = await votingContract.proposalCount();
-    // let token1 = await provider.getStorageAt(TOKEN_ADDRESS, 10);
-    // let token2 = await provider.getStorageAt(TOKEN_ADDRESS, 11);
-    // const numProposalsRaw = await votingContract.voterAddresses;
-    setNumProposals(parseInt(numProposalsRaw._hex, 16));
-    for (let i = 0; i < numProposals; i++) {
-      const proposalVals = await votingContract.getProposal(i);
-      let name = proposalVals[0];
-      let addresses = proposalVals[1];
-      let weights = proposalVals[2];
-      // let votes = proposalVals[3];
-      weights = weights.map((value) => Number(value.toString()) / 1e6);
-      let votes = parseInt(proposalVals[3], 16);
-      console.log("name", name);
-      console.log("addresses", addresses);
-      console.log("weights", weights);
-      console.log("votes", votes);
-      rows.push({ name, addresses, weights, votes });
+    if (votingContract != null) {
+      let rows = [];
+      const numProposalsRaw = await votingContract.proposalCount();
+      // let token1 = await provider.getStorageAt(TOKEN_ADDRESS, 10);
+      // let token2 = await provider.getStorageAt(TOKEN_ADDRESS, 11);
+      // const numProposalsRaw = await votingContract.voterAddresses;
+      setNumProposals(parseInt(numProposalsRaw._hex, 16));
+      for (let i = 0; i < numProposals; i++) {
+        const proposalVals = await votingContract.getProposal(i);
+        let name = proposalVals[0];
+        let addresses = proposalVals[1];
+        let weights = proposalVals[2];
+        // let votes = proposalVals[3];
+        weights = weights.map((value) => Number(value.toString()) / 1e6);
+        let votes = parseInt(proposalVals[3], 16);
+        console.log("name", name);
+        console.log("addresses", addresses);
+        console.log("weights", weights);
+        console.log("votes", votes);
+        rows.push({ name, addresses, weights, votes });
+      }
+      setProposalData(rows);
     }
-    setProposalData(rows);
   }
   async function vote() {
     console.log(voteIdx, typeof voteIdx);

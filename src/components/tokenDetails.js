@@ -11,7 +11,7 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
     mainnet: MAINNET,
     ropsten: ROPSTEN,
   };
-  const tableKeys = ["Name", "Addresses", "Weights"];
+  const tableKeys = ["Name", "Addresses", "Weights", "Balance"];
   const [tokenData, setTokenData] = useState([]);
   const [depositAmount, setDepositAmount] = useState([]);
   const [depositERCAmount, setDepositERCAmount] = useState([]);
@@ -22,43 +22,53 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
   let tokenDict;
   async function getTokenData() {
     console.log(typeof tokenContract, tokenContract);
-    let ethTotal = ethers.utils.formatEther(
-      (await tokenContract.ethDeposited()).toString()
-    );
-    let numBFITokens = ethers.utils.formatEther(
-      (await tokenContract.totalSupply()).toString()
-    );
-    // let portfolioValue = await tokenContract.valuePortfolio();
-    let tAddresses = await tokenContract.readAddresses();
-    let tWeights = await tokenContract.readWeights();
-    let contractBalance = ethers.utils.formatEther(
-      (await provider.getBalance(TOKEN_ADDRESS)).toString()
-    );
+    if (tokenContract != null) {
+      let ethTotal = ethers.utils.formatEther(
+        (await tokenContract.ethDeposited()).toString()
+      );
+      let numBFITokens = ethers.utils.formatEther(
+        (await tokenContract.totalSupply()).toString()
+      );
+      // let portfolioValue = await tokenContract.valuePortfolio();
+      let tAddresses = await tokenContract.readAddresses();
+      let tWeights = await tokenContract.readWeights();
+      let contractBalance = ethers.utils.formatEther(
+        (await provider.getBalance(TOKEN_ADDRESS)).toString()
+      );
 
-    tWeights = tWeights.map((x) => Number(x.toString()) / 1e6);
-    // tWeights = tWeights.forEach((x) => console.log(x, x.toString()));
-    // tWeights = tWeights.forEach((x) => x.toString());
-    console.log("tAddresses", tAddresses);
-    console.log("tWeights", tWeights);
-    console.log("ethTotal", ethTotal);
-    console.log("numBFITokens", numBFITokens);
-    console.log("contractBalance", contractBalance);
-    let tNames = [];
-    for (let i = 0; i < tAddresses.length; i++) {
-      tNames.push(await nameLookup(tAddresses[i], signer));
+      tWeights = tWeights.map((x) => Number(x.toString()) / 1e6);
+      // tWeights = tWeights.forEach((x) => console.log(x, x.toString()));
+      // tWeights = tWeights.forEach((x) => x.toString());
+      console.log("tAddresses", tAddresses);
+      console.log("tWeights", tWeights);
+      console.log("ethTotal", ethTotal);
+      console.log("numBFITokens", numBFITokens);
+      console.log("contractBalance", contractBalance);
+      let tNames = [];
+      let tBalances = [];
+      for (let i = 0; i < tAddresses.length; i++) {
+        tNames.push(await nameLookup(tAddresses[i], signer));
+        let heldToken = new ethers.Contract(tAddresses[i], erc20_abi, signer);
+        let balance = await heldToken.balanceOf(tokenContract.address);
+        tBalances.push(
+          parseFloat(ethers.utils.formatEther(balance.toString())).toFixed(2)
+        );
+      }
+      console.log(tBalances);
+      setTokenRow([
+        ...tNames.map((name, index) => [
+          name,
+          tAddresses[index],
+          tWeights[index],
+          tBalances[index],
+        ]),
+      ]);
+      setTokenAttrs({
+        ethTotal: ethTotal,
+        numBFITokens: numBFITokens,
+        contractBalance,
+      });
     }
-    setTokenRow([
-      ...tNames.map((name, index) => [
-        name,
-        tAddresses[index],
-        tWeights[index],
-      ]),
-    ]);
-    setTokenAttrs({
-      ethTotal: ethTotal,
-      numBFITokens: numBFITokens,
-      contractBalance,
-    });
   }
   async function depositEth() {
     console.log(typeof parseFloat(depositAmount), parseFloat(depositAmount));
@@ -128,6 +138,7 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
                 <td>{row[0]}</td>
                 <td>{row[1]}</td>
                 <td>{row[2]}</td>
+                <td>{row[3]}</td>
               </tr>
             ))}
           </tbody>
