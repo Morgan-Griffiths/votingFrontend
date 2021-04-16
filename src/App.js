@@ -10,7 +10,6 @@ function App({ account, votingContract, tokenContract, provider, signer }) {
   const tableKeys = ["Name", "Addresses", "Weights"];
   const [tokenData, setTokenData] = useState([]);
   const [tableData, setTableData] = useState(data);
-
   // let ethTotal = await tokenContract.ethDeposited();
   // let numBFITokens = await tokenContract.totalSupply();
   // let ethBalance = ethers.utils.formatEther(
@@ -26,6 +25,7 @@ function App({ account, votingContract, tokenContract, provider, signer }) {
       <Proposals
         votingContract={votingContract}
         accountId={account}
+        signer={signer}
         provider={provider}
       />
       <TokenDetails

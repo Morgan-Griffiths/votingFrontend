@@ -1,14 +1,23 @@
 import React, { useMemo, useState, useEffect, Fragment } from "react";
 import { CHAIR_ADDRESS, VOTE_ADDRESS } from "../globals";
+import { nameLookup } from "./utils";
+const erc20_abi = require("../erc20_abi.json");
 
-export function Proposals({ votingContract, accountId, provider }) {
+export function Proposals({ votingContract, accountId, signer, provider }) {
   console.log(
     "Is chair",
     accountId,
     CHAIR_ADDRESS,
     accountId === CHAIR_ADDRESS
   );
-  const proposalKeys = ["ID", "Name", "Addresses", "Weights", "Votes"];
+  const proposalKeys = [
+    "ID",
+    "Name",
+    "TokenNames",
+    "Addresses",
+    "Weights",
+    "Votes",
+  ];
   const [numProposals, setNumProposals] = useState([]);
   const [voterAddresses, setVoterAddresses] = useState([]);
   const [proposalData, setProposalData] = useState([]);
@@ -26,6 +35,10 @@ export function Proposals({ votingContract, accountId, provider }) {
         let name = proposalVals[0];
         let addresses = proposalVals[1];
         let weights = proposalVals[2];
+        let tokenNames = [];
+        for (let j = 0; j < addresses.length; j++) {
+          tokenNames.push(await nameLookup(addresses[j], signer));
+        }
         // let votes = proposalVals[3];
         weights = weights.map((value) => Number(value.toString()) / 1e6);
         let votes = parseInt(proposalVals[3], 16);
@@ -33,7 +46,8 @@ export function Proposals({ votingContract, accountId, provider }) {
         console.log("addresses", addresses);
         console.log("weights", weights);
         console.log("votes", votes);
-        rows.push({ name, addresses, weights, votes });
+        console.log("tokenNames", tokenNames);
+        rows.push({ name, tokenNames, addresses, weights, votes });
       }
       setProposalData(rows);
     }
@@ -79,19 +93,24 @@ export function Proposals({ votingContract, accountId, provider }) {
           <tbody>
             {proposalData.map((row, index) => (
               <tr key={index}>
-                <td>{index}</td>
-                <td>{row.name}</td>
-                <td>
+                <td key={`${index}_index`}>{index}</td>
+                <td key={`${index}_name`}>{row.name}</td>
+                <td key={`${index}_tokenName`}>
+                  {row.tokenNames.map((token) => (
+                    <div>{token}</div>
+                  ))}
+                </td>
+                <td key={`${index}_address`}>
                   {row.addresses.map((address) => (
                     <div>{address}</div>
                   ))}
                 </td>
-                <td>
+                <td key={`${index}_weight`}>
                   {row.weights.map((weight) => (
                     <div>{weight}</div>
                   ))}
                 </td>
-                <td>{row.votes}</td>
+                <td key={`${index}_votes`}>{row.votes}</td>
               </tr>
             ))}
           </tbody>

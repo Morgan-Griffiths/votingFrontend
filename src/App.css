@@ -72,7 +72,7 @@ img {
   background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
   background: linear-gradient(-135deg, #c850c0, #4158d0);
   color: #eee;
-  display: grid;
+  display: flow-root;
 }
 
 .App-logo {

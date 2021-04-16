@@ -3,11 +3,11 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-// import { ViewportProvider } from "./components/viewport";
 import { ethers } from "ethers";
 import tokenabi from "./token_abi.json";
 import votingabi from "./voting_abi.json";
 import { TOKEN_ADDRESS, VOTE_ADDRESS } from "./globals";
+import MetaMaskOnboarding from "@metamask/onboarding";
 
 const { ethereum } = window;
 const isMetaMaskInstalled = Boolean(ethereum && ethereum.isMetaMask);
