@@ -238,6 +238,33 @@ button:visited {
   display: flex;
   margin: 13px 0px;
 }
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+.input-wrapper button {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  top: 12px;
+  padding: 8px 0px 2px 0px;
+  border: none;
+  color: #333;
+  border-radius: unset;
+  height: fit-content;
+  line-height: 1;
+  background: unset;
+}
+.input-wrapper button:hover {
+  transition: none;
+  background-color: none;
+  border: none;
+  border-radius: unset;
+  background: unset;
+  border-bottom: 2px solid #333;
+}
+.input-wrapper button:focus {
+}
 
 @keyframes App-logo-spin {
   from {

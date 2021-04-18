@@ -11,22 +11,23 @@ export const nameValidation = (fieldName, fieldValue) => {
   return null;
 };
 
+export const tokenInputValidation = (value) => {
+  let re = /^[\d\.]*$/;
+  return re.test(value);
+};
+
 export const numberValidation = (fieldName, fieldValue) => {
   if (parseFloat(fieldValue) == 0 || fieldValue === "") {
-    console.log("error");
     return `${fieldName} is required`;
   }
   return null;
 };
 
 export const weightValidation = (fieldName, fieldValue) => {
-  console.log("weightValidation", fieldValue);
   if (parseFloat(fieldValue) == 0 || fieldValue === "") {
-    console.log("zero or empty");
     return `${fieldName} must be greater than 0`;
   }
   if (parseFloat(fieldValue) < 0 || parseFloat(fieldValue) > 1) {
-    console.log("outside normal values");
     return `${fieldName} has to be between 0 and 1`;
   }
   return null;

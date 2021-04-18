@@ -4,12 +4,7 @@ import { nameLookup } from "./utils";
 const erc20_abi = require("../erc20_abi.json");
 
 export function Proposals({ votingContract, accountId, signer, provider }) {
-  console.log(
-    "Is chair",
-    accountId,
-    CHAIR_ADDRESS,
-    accountId === CHAIR_ADDRESS
-  );
+  console.log("Is chair", accountId === CHAIR_ADDRESS);
   const proposalKeys = [
     "ID",
     "Name",
@@ -23,7 +18,9 @@ export function Proposals({ votingContract, accountId, signer, provider }) {
   const [proposalData, setProposalData] = useState([]);
   const [voteIdx, setVoteIdx] = useState([]);
   async function getData() {
-    if (votingContract != null) {
+    console.log("getData");
+    if (accountId) {
+      console.log("here", accountId);
       let rows = [];
       const numProposalsRaw = await votingContract.proposalCount();
       // let token1 = await provider.getStorageAt(TOKEN_ADDRESS, 10);
@@ -68,12 +65,20 @@ export function Proposals({ votingContract, accountId, signer, provider }) {
     }
   }
   async function getWinner() {
-    let result = await votingContract.executeProposal();
-    console.log("result", result);
+    try {
+      let result = await votingContract.executeProposal();
+      console.log("result", result);
+    } catch {
+      alert("Connect your account");
+    }
   }
   async function reset() {
-    let result = await votingContract.reset();
-    console.log("reset", result);
+    try {
+      let result = await votingContract.reset();
+      console.log("reset", result);
+    } catch {
+      alert("Connect your account");
+    }
   }
   useEffect(() => {
     getData();

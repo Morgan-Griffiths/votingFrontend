@@ -3,6 +3,7 @@ import { BigNumber, ethers } from "ethers";
 import { TOKEN_ADDRESS } from "../globals";
 import { MAINNET, RINKEBY, ROPSTEN } from "../tokenAddresses";
 import { nameLookup } from "./utils";
+import { tokenInputValidation, addressValidation } from "./validation";
 const erc20_abi = require("../erc20_abi.json");
 
 export function TokenDetails({ tokenContract, provider, signer, accountId }) {
@@ -19,7 +20,27 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
   const [withdrawAmount, setWithdrawAmount] = useState([]);
   const [tokenRow, setTokenRow] = useState([]);
   const [tokenAttrs, setTokenAttrs] = useState({});
-  let tokenDict;
+  const depositERC20Func = (value) => {
+    if (tokenInputValidation(value)) {
+      setDepositERCAmount(value);
+    }
+  };
+  const withdrawFunc = (value) => {
+    if (tokenInputValidation(value)) {
+      setWithdrawAmount(value);
+    }
+  };
+  const depositFunc = (value) => {
+    if (tokenInputValidation(value)) {
+      setDepositAmount(value);
+    }
+  };
+  const setWithdrawMax = async () => {
+    if (accountId != null) {
+      let balance = await tokenContract.balanceOf(accountId);
+      setWithdrawAmount(balance);
+    }
+  };
   async function getTokenData() {
     console.log(typeof tokenContract, tokenContract);
     if (tokenContract != null) {
@@ -71,42 +92,58 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
     }
   }
   async function depositEth() {
-    console.log(typeof parseFloat(depositAmount), parseFloat(depositAmount));
-    let value = ethers.utils.parseEther(depositAmount);
-    let gasPrice = BigNumber.from(10).pow(9);
-    let gasLimit = BigNumber.from(10).pow(6);
-    let result = await tokenContract.deposit({ value, gasPrice, gasLimit });
-    console.log(await result.wait());
+    try {
+      console.log(typeof parseFloat(depositAmount), parseFloat(depositAmount));
+      let value = ethers.utils.parseEther(depositAmount);
+      let gasPrice = BigNumber.from(10).pow(9);
+      let gasLimit = BigNumber.from(10).pow(6);
+      let result = await tokenContract.deposit({ value, gasPrice, gasLimit });
+      console.log(await result.wait());
+    } catch {
+      alert("Connect your account");
+    }
   }
   async function depositERC20() {
-    let amnt = BigNumber.from(depositERCAmount);
-    let address = depositERCAddress;
-    console.log("amnt", amnt, typeof amnt);
-    console.log("address", address);
-    console.log("accountId", accountId);
-    const token = new ethers.Contract(depositERCAddress, erc20_abi, signer);
-    let token_balance = await token.balanceOf(accountId);
-    console.log("token_balance", token_balance);
-    await token.approve(TOKEN_ADDRESS, token_balance);
-    // let value = BigNumber.from(10).pow(17);
-    // let gasPrice = BigNumber.from(10).pow(9);
-    // let gasLimit = BigNumber.from(10).pow(6);
-    let result = await tokenContract.depositToken(amnt, address);
-    console.log(await result.wait());
+    try {
+      let amnt = BigNumber.from(depositERCAmount);
+      let address = depositERCAddress;
+      console.log("amnt", amnt, typeof amnt);
+      console.log("address", address);
+      console.log("accountId", accountId);
+      const token = new ethers.Contract(depositERCAddress, erc20_abi, signer);
+      let token_balance = await token.balanceOf(accountId);
+      console.log("token_balance", token_balance);
+      await token.approve(TOKEN_ADDRESS, token_balance);
+      // let value = BigNumber.from(10).pow(17);
+      // let gasPrice = BigNumber.from(10).pow(9);
+      // let gasLimit = BigNumber.from(10).pow(6);
+      let result = await tokenContract.depositToken(amnt, address);
+      console.log(await result.wait());
+    } catch {
+      alert("Connect your account");
+    }
   }
   async function withdraw() {
-    let value = ethers.utils.parseEther(withdrawAmount);
-    let gasPrice = BigNumber.from(10).pow(9);
-    let gasLimit = BigNumber.from(10).pow(6);
-    let result = await tokenContract.withdraw(value, { gasPrice, gasLimit });
-    console.log(await result.wait());
+    try {
+      let value = ethers.utils.parseEther(withdrawAmount);
+      let gasPrice = BigNumber.from(10).pow(9);
+      let gasLimit = BigNumber.from(10).pow(6);
+      let result = await tokenContract.withdraw(value, { gasPrice, gasLimit });
+      console.log(await result.wait());
+    } catch {
+      alert("Connect your account");
+    }
   }
   async function withdrawTokens() {
-    let value = BigNumber.from(10).pow(17);
-    let gasPrice = BigNumber.from(10).pow(1);
-    let gasLimit = BigNumber.from(10).pow(6);
-    let result = await tokenContract.withdrawRaw();
-    console.log(await result.wait());
+    try {
+      let value = BigNumber.from(10).pow(17);
+      let gasPrice = BigNumber.from(10).pow(1);
+      let gasLimit = BigNumber.from(10).pow(6);
+      let result = await tokenContract.withdrawRaw();
+      console.log(await result.wait());
+    } catch {
+      alert("Connect your account");
+    }
   }
   useEffect(() => {
     getTokenData();
@@ -138,6 +175,7 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
                 <td>{row[1]}</td>
                 <td>{row[2]}</td>
                 <td>{row[3]}</td>
+                <td>{row[4]}</td>
               </tr>
             ))}
           </tbody>
@@ -145,23 +183,21 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
         <div className="button-row">
           <button onClick={depositEth}>Deposit</button>
           <input
-            type="number"
-            step="0.1"
+            type="text"
             min="0"
             value={depositAmount}
             placeholder="Amount of eth"
-            onChange={(event) => setDepositAmount(event.target.value)}
+            onChange={(event) => depositFunc(event.target.value)}
           />
         </div>
         <div className="button-row">
           <button onClick={depositERC20}>Deposit ERC20</button>
           <input
-            type="number"
-            step="0.1"
+            type="text"
             min="0"
             value={depositERCAmount}
             placeholder="Token amount"
-            onChange={(event) => setDepositERCAmount(event.target.value)}
+            onChange={(event) => depositERC20Func(event.target.value)}
           />
           <input
             value={depositERCAddress}
@@ -171,14 +207,16 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
         </div>
         <div className="button-row">
           <button onClick={withdraw}>Withdraw</button>
-          <input
-            type="number"
-            step="0.1"
-            min="0"
-            value={withdrawAmount}
-            placeholder="Number of BFI tokens"
-            onChange={(event) => setWithdrawAmount(event.target.value)}
-          />
+          <div className="input-wrapper">
+            <input
+              type="text"
+              min="0"
+              value={withdrawAmount}
+              placeholder="Number of BFI tokens"
+              onChange={(event) => withdrawFunc(event.target.value)}
+            />
+            <button onClick={setWithdrawMax}>Max</button>
+          </div>
         </div>
         <button onClick={withdrawTokens}>Withdraw Tokens</button>
       </div>
