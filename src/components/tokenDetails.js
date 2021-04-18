@@ -36,9 +36,9 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
     }
   };
   const setWithdrawMax = async () => {
-    if (accountId != null) {
+    if (accountId) {
       let balance = await tokenContract.balanceOf(accountId);
-      setWithdrawAmount(balance);
+      setWithdrawAmount(ethers.utils.formatEther(balance).toString());
     }
   };
   async function getTokenData() {
@@ -105,7 +105,7 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
   }
   async function depositERC20() {
     try {
-      let amnt = BigNumber.from(depositERCAmount);
+      let amnt = BigNumber.from(depositERCAmount).toString();
       let address = depositERCAddress;
       console.log("amnt", amnt, typeof amnt);
       console.log("address", address);
@@ -124,14 +124,20 @@ export function TokenDetails({ tokenContract, provider, signer, accountId }) {
     }
   }
   async function withdraw() {
+    if (!accountId) {
+      alert("Connect your account");
+    }
     try {
       let value = ethers.utils.parseEther(withdrawAmount);
+      console.log("here");
       let gasPrice = BigNumber.from(10).pow(9);
+      console.log("here");
       let gasLimit = BigNumber.from(10).pow(6);
+      console.log("value", value);
       let result = await tokenContract.withdraw(value, { gasPrice, gasLimit });
       console.log(await result.wait());
     } catch {
-      alert("Connect your account");
+      alert("Invalid amount");
     }
   }
   async function withdrawTokens() {
