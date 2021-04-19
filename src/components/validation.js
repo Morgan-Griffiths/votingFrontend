@@ -12,7 +12,7 @@ export const nameValidation = (fieldName, fieldValue) => {
 };
 
 export const tokenInputValidation = (value) => {
-  let re = /^[d\.]*$/;
+  let re = /^[\d\.]*$/;
   return re.test(value);
 };
 
