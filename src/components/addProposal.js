@@ -1,15 +1,12 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import React, { useState, Fragment } from "react";
 import { CSVReader } from "react-papaparse";
-import * as Papa from "papaparse";
 import {
-  numberValidation,
   nameValidation,
   weightValidation,
   addressValidation,
   sortAddresses,
 } from "./validation";
-import { readCSV, nameLookup, findDuplicates, findInvalids } from "./utils";
+import { readCSV, nameLookup, findDuplicates } from "./utils";
 
 export function AddProposal({ votingContract, signer }) {
   const proposalKeys = ["Name", "Addresses", "Weights"];
@@ -77,7 +74,7 @@ export function AddProposal({ votingContract, signer }) {
   const sendProposal = async () => {
     let rawAddresses = [];
     let rawWeights = [];
-    tokens.forEach((val, index) => {
+    tokens.forEach((val) => {
       rawAddresses.push(val[1]);
       rawWeights.push(Number(val[2]));
     });

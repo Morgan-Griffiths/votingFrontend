@@ -12,19 +12,19 @@ export const nameValidation = (fieldName, fieldValue) => {
 };
 
 export const tokenInputValidation = (value) => {
-  let re = /^[\d\.]*$/;
+  let re = /^[d\.]*$/;
   return re.test(value);
 };
 
 export const numberValidation = (fieldName, fieldValue) => {
-  if (parseFloat(fieldValue) == 0 || fieldValue === "") {
+  if (parseFloat(fieldValue) === 0 || fieldValue === "") {
     return `${fieldName} is required`;
   }
   return null;
 };
 
 export const weightValidation = (fieldName, fieldValue) => {
-  if (parseFloat(fieldValue) == 0 || fieldValue === "") {
+  if (parseFloat(fieldValue) === 0 || fieldValue === "") {
     return `${fieldName} must be greater than 0`;
   }
   if (parseFloat(fieldValue) < 0 || parseFloat(fieldValue) > 1) {
@@ -40,7 +40,7 @@ export const addressValidation = (fieldName, fieldValue) => {
   if (!/^0x[0-9a-fA-F]{40}$/i.test(fieldValue)) {
     return "Invalid address characters";
   }
-  if (fieldValue.length != 42) {
+  if (fieldValue.length !== 42) {
     return `${fieldName} needs 42 characters`;
   }
   try {
@@ -79,7 +79,7 @@ export function sortAddresses(addresses, weights) {
     console.log(a, b);
     return parseInt(a.address, 16) < parseInt(b.address, 16)
       ? -1
-      : parseInt(a.address, 16) == parseInt(b.address, 16)
+      : parseInt(a.address, 16) === parseInt(b.address, 16)
       ? 0
       : 1;
   });
